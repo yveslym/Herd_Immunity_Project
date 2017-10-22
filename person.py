@@ -43,13 +43,13 @@ from randomUser import Create_user
             is_vaccinated attribute is changed to True, and set self.infected to None.
     '''
 class Person(object):
-    def __init__(self, _id, is_vaccinated, infected=None):
+    def __init__(self, is_vaccinated, infected=False):
         # TODO:  Finish this method.  Follow the instructions in the class documentation
         # to set the corret values for the following attributes.
-        self._id = uuid.uuid4().hex[:5]
-        self.is_vaccinated = None
-        self.is_alive = None
-        self.infected = None #virus type object
+        self._id = uuid.uuid4().hex[:10]
+        self.is_vaccinated = is_vaccinated
+        self.is_alive = True
+        self.infected = infected #virus type object
         user_obj = Create_user()
         user = user_obj.create()
         self.name = ('%s %s' %(user.firt_name,user.last_name))

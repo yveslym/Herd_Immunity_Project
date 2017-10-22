@@ -4,11 +4,11 @@
 
                 _____Attributes______
 
-mortality_rate: death mortality 
+mortality_rate: death mortality
 """
 class virus(Onject):
     def __init__(self,name,mortality_rate,contagious_rate):
         self.mortality_rate = mortality_rate
         self.name = name
-        self.contagious_rate
+        self.contagious_rate = contagious_rate
         pass

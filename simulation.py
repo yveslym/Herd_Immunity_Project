@@ -2,6 +2,7 @@ import random, sys
 random.seed(42)
 from person import Person
 from logger import Logger
+from virus import Virus
 
 class Simulation(object):
     '''
@@ -76,23 +77,25 @@ class Simulation(object):
         self.total_infected = 0
         self.current_infected = 0
         self.next_person_id = 0
+        self.total_vaccinated = 0
         self.virus_name = virus_name
         self.mortality_rate = mortality_rate
         self.basic_repro_num = basic_repro_num
+        self.virus = Virus(virus_name,mortality_rate,basic_repro_num)
         self.file_name = "{}_simulation_pop_{}_vp_{}_infected_{}.txt".format(
             virus_name, population_size, vacc_percentage, initial_infected)
 
         # TODO: Create a Logger object and bind it to self.logger.  You should use this
         # logger object to log all events of any importance during the simulation.  Don't forget
         # to call these logger methods in the corresponding parts of the simulation!
-        self.logger = None
+        self.logger = Logger(file_name)
 
         # This attribute will be used to keep track of all the people that catch
         # the infection during a given time step. We'll store each newly infected
         # person's .ID attribute in here.  At the end of each time step, we'll call
         # self._infect_newly_infected() and then reset .newly_infected back to an empty
         # list.
-        self.newly_infected = []
+        self.newly_infected = [Person]
         # TODO: Call self._create_population() and pass in the correct parameters.
         # Store the array that this method will return in the self.population attribute.
 
@@ -103,23 +106,30 @@ class Simulation(object):
         # simulation (correct number of people in the population, correct percentage of
         # people vaccinated, correct number of initially infected people).
         population = []
-        infected_count = 0
+        count = 0
         while len(population) != pop_size:
-            if infected_count !=  initial_infected:
+            if count < initial_infected:
                 # TODO: Create all the infected people first, and then worry about the rest.
                 # Don't forget to increment infected_count every time you create a
                 # new infected person!
-                pass
+                infected_person = Person(False,True)
+                self.population[count] = infected_person
             else:
                 # Now create all the rest of the people.
                 # Every time a new person will be created, generate a random number between
                 # 0 and 1.  If this number is smaller than vacc_percentage, this person
                 # should be created as a vaccinated person. If not, the person should be
                 # created as an unvaccinated person.
-                pass
-            # TODO: After any Person object is created, whether sick or healthy,
-            # you will need to increment self.next_person_id by 1. Each Person object's
-            # ID has to be unique!
+                vacc_chance = random.uniform(0.0, 1.0)
+                if vacc_chance < vacc_percentage:
+                    person = Person(True,False)
+                    self.population[count] = person
+                    self.total_vaccinated +=1
+                else:
+                    erson = Person(False,False)
+                    population[count] = person
+            count += 1
+
         return population
 
     def _simulation_should_continue(self):
@@ -129,7 +139,12 @@ class Simulation(object):
         #     - The entire population is dead.
         #     - There are no infected people left in the population.
         # In all other instances, the simulation should continue.
-        pass
+        for person in self.population:
+            if person.is_alive == True:
+                return True
+            elif person.infected == True:
+                return True
+        return False
 
     def run(self):
         # TODO: Finish this method.  This method should run the simulation until
