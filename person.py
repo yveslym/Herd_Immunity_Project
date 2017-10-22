@@ -63,8 +63,4 @@ class Person(object):
                 self.infected = None
             else:
                 self.is_alive = False
-
-
-
-
         pass
