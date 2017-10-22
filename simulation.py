@@ -114,7 +114,7 @@ class Simulation(object):
                 # TODO: Create all the infected people first, and then worry about the rest.
                 # Don't forget to increment infected_count every time you create a
                 # new infected person!
-                infected_person = Person(False,True)
+                infected_person = Person(False,True,self.virus)
                 self.population[count] = infected_person
             else:
                 # Now create all the rest of the people.
@@ -253,20 +253,10 @@ class Simulation(object):
         #interacting trough the population,
         #retrieve all sick population and randomly add as dead or survived
 
-        infected_population = [Person]
         for person in self.population:
             if person.infected == True:
-                infected_population.append(person)
-        for person in infected_population:
-            survive_chance = random.uniform(0.0,1.0)
-            if survive_chance > self.virus.mortality_rate:
-                person.infected = False
-                person.is_vaccinated = True
-                person.survive = True
-            else:
-                poerson.is_alive = False
-                person.infected = False
-                self.total_dead_population += 1
+                if person.did_survive_infection() == False:
+                    self.total_dead_population +=1
 
 
     def _infect_newly_infected(self):
@@ -284,6 +274,8 @@ class Simulation(object):
             for person in population:
                 if person._id == person_id:
                     person.infected = True
+                    person.virus = self.virus
+
                     continue
         self.newly_infected = []
 

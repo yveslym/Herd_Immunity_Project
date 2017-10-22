@@ -3,8 +3,7 @@ import random
 import uuid
 from randomUser import Create_user
 
-
-    '''
+'''
     Person objects will populate the simulation.
 
     _____Attributes______:
@@ -43,7 +42,7 @@ from randomUser import Create_user
             is_vaccinated attribute is changed to True, and set self.infected to None.
     '''
 class Person(object):
-    def __init__(self, is_vaccinated=False, infected=False):
+    def __init__(self, is_vaccinated=False, infected=False, virus = None):
         # TODO:  Finish this method.  Follow the instructions in the class documentation
         # to set the corret values for the following attributes.
         self._id = uuid.uuid4().hex[:10]
@@ -51,6 +50,7 @@ class Person(object):
         self.is_alive = True
         self.survive = False
         self.infected = infected #virus type object
+        self.virus = virus
         user_obj = Create_user()
         user = user_obj.create()
         self.name = ('%s %s' %(user.firt_name,user.last_name))
@@ -61,15 +61,21 @@ class Person(object):
         # for resolve_infection.  If person dies, set is_alive to False and return False.
         # If person lives, set is_vaccinated = True, infected = None, return True.
         if self.infected is not None:
-            chance_to_survive =  random.randint(0,1)
-            if chance_to_survive > self.infected.mortality_rate:
+            chance_to_survive =  random.uniform(0.0,1.0)
+            if chance_to_survive > self.virus.mortality_rate:
                 self.is_alive = True
                 self.is_vaccinated = True
-                self.infected = None
+                self.infected = False
+                return True
             else:
                 self.is_alive = False
+                self.infected = False
+                return False
+
+
+
         pass
 
-    def resolve_infection():
+    #def resolve_infection():
 
         #chance_to_survice

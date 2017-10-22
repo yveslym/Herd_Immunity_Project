@@ -1,5 +1,5 @@
 
-    '''
+'''
     Utility class responsible for logging all interactions of note during the
     simulation.
 
@@ -111,7 +111,7 @@ class Logger(object):
         if did_die_from_infection is True:
             did_die_from_infection = (" %s died from infection, so sad :(" % person.name)
         else:
-            did_die_from_infection = (" %s survived infection, Yes :)" %s person.name)
+            did_die_from_infection = (" %s survived infection, Yes :)" % person.name)
         with open('%s.txt' % self.file_name, 'a') as files:
             files.write("%s %s\n" % (person.name, did_die_from_infection))
         pass
