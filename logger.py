@@ -62,8 +62,7 @@ class Logger(object):
         # as the first line of the file.  This line of metadata should be tab-delimited
         # (each item separated by a '\t' character).
         files = open('%s.txt' % self.file_name, 'w')
-        files.write("%s population %s times people got vaccinated. %s's mortality rate and basic reproduction number are %s and %s\n" % (pop_size, vacc_percentage, virus_name, mortality_rate, basic_repro_num))
-        files.close()
+        files.write("%s population \t %s times people got vaccinated. \t %s's mortality rate is %s  \t basic reproduction number is %s \n" % (pop_size, vacc_percentage, virus_name, mortality_rate, basic_repro_num))
 
         # NOTE: Since this is the first method called, it will create the text file
         # that we will store all logs in.  Be sure to use 'w' mode when you open the file.
@@ -73,8 +72,8 @@ class Logger(object):
         # event logged ends up on a separate line!
         pass
 
-    def log_interaction(self, person1, person2, did_infect=None,
-                        person2_vacc=None, person2_sick=None):
+    def log_interaction(self, infected_person, Random_person, did_infect=None,
+                        random_person_vacc=None, random_person_sick=None):
         # TODO: Finish this method.  The Simulation object should use this method to
         # log every interaction a sick individual has during each time step.  This method
         # should accomplish this by using the information from person1 (the infected person),
@@ -86,6 +85,19 @@ class Logger(object):
         # all the possible edge cases!
         # NOTE: Make sure to end every line with a '/n' character to ensure that each
         # event logged ends up on a separate line!
+
+        if did_infect is True:
+            random_person_status = "infected"
+            random_person_reason = ("%s does not have immunity" % random_person.name)
+        else:
+            random_person_status = "could not infect"
+            if random_person_vacc is True:
+                random_person_reason = ("%s has immunity" % random_person.name)
+            elif random_person_sick is True:
+                person2_reason = ("%s has already gotten sick" % random_person.name)
+        with open('%s.txt' % self.file_name, 'a') as files:
+            files.write("%s %s %s because %s\n" % (infected_person, person_status, random_person.name, random_person_reason))
+
         pass
 
     def log_infection_survival(self, person, did_die_from_infection):
@@ -96,9 +108,15 @@ class Logger(object):
         # on the format of the log.
         # NOTE: Make sure to end every line with a '/n' character to ensure that each
         # event logged ends up on a separate line!
+        if did_die_from_infection is True:
+            did_die_from_infection = (" %s died from infection, so sad :(" % person.name)
+        else:
+            did_die_from_infection = (" %s survived infection, Yes :)" %s person.name)
+        with open('%s.txt' % self.file_name, 'a') as files:
+            files.write("%s %s\n" % (person.name, did_die_from_infection))
         pass
 
-    def log_time_step(self, time_step_number):
+    def log_time_step(self, time_step_number, infected_people, vaccinated_people, dead_people, regular_people):
         # TODO: Finish this method.  This method should log when a time step ends, and a
         # new one begins.  See the documentation for more information on the format of the log.
         # NOTE: Stretch challenge opportunity! Modify this method so that at the end of each time
@@ -107,4 +125,8 @@ class Logger(object):
         # to compute these statistics for you, as a Logger's job is just to write logs!
         # NOTE: Make sure to end every line with a '/n' character to ensure that each
         # event logged ends up on a separate line!
+        with open('%s.txt' % self.file_name, 'a') as f:
+            f.write("time step #%s is done\n"
+                    "%s people got infected, %s people got vaccinated,"
+                    " %s people died and %s people are still regular\n" % (time_step_number, infected_people, vaccinated_people, dead_people, regular_people))
         pass

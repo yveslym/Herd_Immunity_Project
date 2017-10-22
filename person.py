@@ -1,6 +1,7 @@
 import random
 # TODO: Import the virus clase
 import uuid
+from randomUser import Create_user
 
 
     '''
@@ -49,6 +50,9 @@ class Person(object):
         self.is_vaccinated = None
         self.is_alive = None
         self.infected = None #virus type object
+        user_obj = Create_user()
+        user = user_obj.create()
+        self.name = ('%s %s' %(user.firt_name,user.last_name))
 
 
     def did_survive_infection():
@@ -64,3 +68,7 @@ class Person(object):
             else:
                 self.is_alive = False
         pass
+
+    def resolve_infection():
+
+        #chance_to_survice
