@@ -77,7 +77,9 @@ class Simulation(object):
         self.total_infected = 0
         self.current_infected = 0
         self.next_person_id = 0
+        self.total_dead_population = 0
         self.total_vaccinated = 0
+        self.interacted = False
         self.virus_name = virus_name
         self.mortality_rate = mortality_rate
         self.basic_repro_num = basic_repro_num
@@ -125,6 +127,7 @@ class Simulation(object):
                     person = Person(True,False)
                     self.population[count] = person
                     self.total_vaccinated +=1
+
                 else:
                     erson = Person(False,False)
                     population[count] = person
@@ -139,12 +142,25 @@ class Simulation(object):
         #     - The entire population is dead.
         #     - There are no infected people left in the population.
         # In all other instances, the simulation should continue.
+
+        end = False
+        #check if nobody is infected
+        for person in self.population:
+            if person.infected == True:
+                end = True
+                continue
+        if end == False:
+            return end
+
+        #check if all population die
+        count = 0
         for person in self.population:
             if person.is_alive == True:
-                return True
-            elif person.infected == True:
-                return True
-        return False
+                count += 1
+        if count == 0:
+            return False
+        else:
+            return True
 
     def run(self):
         # TODO: Finish this method.  This method should run the simulation until
@@ -166,6 +182,8 @@ class Simulation(object):
         # TODO: for every iteration of this loop, call self.time_step() to compute another
         # round of this simulation.  At the end of each iteration of this loop, remember
         # to rebind should_continue to another call of self._simulation_should_continue()!
+            self.time_step()
+            should_continue = self._simulation_should_continue()
 
             pass
         print('The simulation has ended after {time_step_counter} turns.'.format(time_step_counter))
@@ -182,14 +200,22 @@ class Simulation(object):
             #           - Else:
             #               - Call simulation.interaction(person, random_person)
             #               - Increment interaction counter by 1.
+
             for person in self.population:
-                if person.infected == True:
+                if person.infected == True and person.is_alive == True:
                     count = 0
+
                     while count < 100:
                         random_person = self.population[random.randint(0,len(self.population)-1)]
-                        if random_person.is_alive == True:
+                        if random_person.is_alive == True and random_person.interacted == False:
                             self.interaction(person,random_person)
                             count += 1
+
+            self.die_or_survived()
+            self._infect_newly_infected()
+            # reset the population interaction
+            for person in population:
+                person.interacted = False
             pass
 
     def interaction(self, person, random_person):
@@ -215,9 +241,33 @@ class Simulation(object):
 
         if random_person.is_vaccinated == False and random_person.is_alive == True and random_person.infected == False:
             chance = random.uniform(0.0, 1.0)
+            did_infect = False
             if chance < self.virus.contagious_rate:
+                did_affect = True
                 self.newly_infected.append(random_person._id)
+                self.total_infected += 1
+            self.logger.log_interaction(person,random_person,did_infect, random_person.is_vaccinated,random_person.infected)
         pass
+
+    def die_or_survived(self):
+        #interacting trough the population,
+        #retrieve all sick population and randomly add as dead or survived
+
+        infected_population = [Person]
+        for person in self.population:
+            if person.infected == True:
+                infected_population.append(person)
+        for person in infected_population:
+            survive_chance = random.uniform(0.0,1.0)
+            if survive_chance > self.virus.mortality_rate:
+                person.infected = False
+                person.is_vaccinated = True
+                person.survive = True
+            else:
+                poerson.is_alive = False
+                person.infected = False
+                self.total_dead_population += 1
+
 
     def _infect_newly_infected(self):
         # TODO: Finish this method! This method should be called at the end of
@@ -235,6 +285,7 @@ class Simulation(object):
                 if person._id == person_id:
                     person.infected = True
                     continue
+        self.newly_infected = []
 
 if __name__ == "__main__":
     params = sys.argv[1:]

@@ -72,8 +72,8 @@ class Logger(object):
         # event logged ends up on a separate line!
         pass
 
-    def log_interaction(self, infected_person, Random_person, did_infect=None,
-                        random_person_vacc=None, random_person_sick=None):
+    def log_interaction(self, infected_person, Random_person, did_infect,
+                        random_person_vacc, random_person_sick):
         # TODO: Finish this method.  The Simulation object should use this method to
         # log every interaction a sick individual has during each time step.  This method
         # should accomplish this by using the information from person1 (the infected person),

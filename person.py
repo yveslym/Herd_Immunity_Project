@@ -49,6 +49,7 @@ class Person(object):
         self._id = uuid.uuid4().hex[:10]
         self.is_vaccinated = is_vaccinated
         self.is_alive = True
+        self.survive = False
         self.infected = infected #virus type object
         user_obj = Create_user()
         user = user_obj.create()
