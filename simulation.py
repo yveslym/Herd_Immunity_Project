@@ -3,6 +3,7 @@ random.seed(42)
 from person import Person
 from logger import Logger
 from virus import Virus
+import pdb
 
 class Simulation(object):
     '''
@@ -78,7 +79,9 @@ class Simulation(object):
         self.current_infected = 0
         self.next_person_id = 0
         self.total_dead_population = 0
+        self.vacc_percentage = vacc_percentage
         self.total_vaccinated = 0
+        self.initial_infected = initial_infected
         self.interacted = False
         self.virus_name = virus_name
         self.mortality_rate = mortality_rate
@@ -90,7 +93,7 @@ class Simulation(object):
         # TODO: Create a Logger object and bind it to self.logger.  You should use this
         # logger object to log all events of any importance during the simulation.  Don't forget
         # to call these logger methods in the corresponding parts of the simulation!
-        self.logger = Logger(file_name)
+        self.logger = Logger(self.file_name)
 
         # This attribute will be used to keep track of all the people that catch
         # the infection during a given time step. We'll store each newly infected
@@ -107,15 +110,17 @@ class Simulation(object):
         # an array filled with Person objects that matches the specifications of the
         # simulation (correct number of people in the population, correct percentage of
         # people vaccinated, correct number of initially infected people).
+
+        #pdb.set_trace()
         population = []
         count = 0
-        while len(population) != pop_size:
+        while len(self.population) < pop_size:
             if count < self.initial_infected:
                 # TODO: Create all the infected people first, and then worry about the rest.
                 # Don't forget to increment infected_count every time you create a
                 # new infected person!
                 infected_person = Person(False,True,self.virus)
-                self.population[count] = infected_person
+                self.population.append(infected_person)
             else:
                 # Now create all the rest of the people.
                 # Every time a new person will be created, generate a random number between
@@ -125,14 +130,14 @@ class Simulation(object):
                 vacc_chance = random.uniform(0.0, 1.0)
                 if vacc_chance < vacc_percentage:
                     person = Person(True,False)
-                    self.population[count] = person
+                    self.population.append(person)
                     self.total_vaccinated +=1
 
                 else:
-                    erson = Person(False,False)
-                    population[count] = person
+                    person = Person(False,False)
+                    self.population.append(person)
             count += 1
-
+        #pdb.set_trace()
         return population
 
     def _simulation_should_continue(self):
@@ -163,6 +168,7 @@ class Simulation(object):
             return True
 
     def run(self):
+        #pdb.set_trace()
         # TODO: Finish this method.  This method should run the simulation until
         # everyone in the simulation is dead, or the disease no longer exists in the
         # population. To simplify the logic here, we will use the helper method
@@ -173,17 +179,22 @@ class Simulation(object):
         # have passed using the time_step_counter variable.  Make sure you remember to
         # the logger's log_time_step() method at the end of each time step, pass in the
         # time_step_counter variable!
+        Logger.write_metadata(self.population_size, self.vacc_percentage, self.virus.name, self.virus.mortality_rate, self.virus.contagious_rate)
         time_step_counter = 0
         self._create_population()
         # TODO: Remember to set this variable to an intial call of
         # self._simulation_should_continue()!
+        #pdb.set_trace()
         should_continue = self._simulation_should_continue()
         while should_continue == True:
+            print('time step count #'+str(time_step_counter))
         # TODO: for every iteration of this loop, call self.time_step() to compute another
         # round of this simulation.  At the end of each iteration of this loop, remember
         # to rebind should_continue to another call of self._simulation_should_continue()!
             self.time_step()
             should_continue = self._simulation_should_continue()
+            time_step_counter +=1
+
 
             pass
         print('The simulation has ended after {time_step_counter} turns.'.format(time_step_counter))
@@ -213,6 +224,7 @@ class Simulation(object):
 
             self.die_or_survived()
             self._infect_newly_infected()
+            print
             # reset the population interaction
             for person in population:
                 person.interacted = False
@@ -223,7 +235,7 @@ class Simulation(object):
         # people are selected for an interaction.  That means that only living people
         # should be passed into this method.  Assert statements are included to make sure
         # that this doesn't happen.
-        assert person1.is_alive == True
+        assert person.is_alive == True
         assert random_person.is_alive == True
 
         # The possible cases you'll need to cover are listed below:
@@ -238,12 +250,12 @@ class Simulation(object):
             #     Simulation object's newly_infected array, so that their .infected
             #     attribute can be changed to True at the end of the time step.
         # TODO: Remember to call self.logger.log_interaction() during this method!
-
+        #pdb.set_trace()
         if random_person.is_vaccinated == False and random_person.is_alive == True and random_person.infected == False:
             chance = random.uniform(0.0, 1.0)
             did_infect = False
             if chance < self.virus.contagious_rate:
-                did_affect = True
+                did_infect = True
                 self.newly_infected.append(random_person._id)
                 self.total_infected += 1
             self.logger.log_interaction(person,random_person,did_infect, random_person.is_vaccinated,random_person.infected)
@@ -292,4 +304,5 @@ if __name__ == "__main__":
         initial_infected = 1
     simulation = Simulation(pop_size, vacc_percentage, virus_name, mortality_rate,
                             basic_repro_num, initial_infected)
+    #pdb.set_trace()
     simulation.run()

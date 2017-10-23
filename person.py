@@ -2,6 +2,7 @@ import random
 # TODO: Import the virus clase
 import uuid
 from randomUser import Create_user
+import pdb
 
 '''
     Person objects will populate the simulation.
@@ -51,9 +52,11 @@ class Person(object):
         self.survive = False
         self.infected = infected #virus type object
         self.virus = virus
+        self.interacted = False
         user_obj = Create_user()
         user = user_obj.create()
-        self.name = ('%s %s' %(user.firt_name,user.last_name))
+        self.name = ('%s %s' %(user.first_name,user.last_name))
+        #pdb.set_trace()
 
 
     def did_survive_infection():

@@ -49,11 +49,13 @@
                         infected
                     - The total number of dead, including those that died during this time step.
     '''
+import pdb
 class Logger(object):
     def __init__(self, file_name):
         # TODO:  Finish this initialization method.  The file_name passed should be the
         # full file name of the file that the logs will be written to.
         self.file_name = None
+        self.random_reason = None
 
     def write_metadata(self, pop_size, vacc_percentage, virus_name, mortality_rate,
                        basic_repro_num):
@@ -72,7 +74,7 @@ class Logger(object):
         # event logged ends up on a separate line!
         pass
 
-    def log_interaction(self, infected_person, Random_person, did_infect,
+    def log_interaction(self, infected_person, random_person, did_infect,
                         random_person_vacc, random_person_sick):
         # TODO: Finish this method.  The Simulation object should use this method to
         # log every interaction a sick individual has during each time step.  This method
@@ -86,18 +88,20 @@ class Logger(object):
         # NOTE: Make sure to end every line with a '/n' character to ensure that each
         # event logged ends up on a separate line!
 
+        pdb.set_trace()
+        random_person_status = ''
         if did_infect is True:
             random_person_status = "infected"
-            random_person_reason = ("%s does not have immunity" % random_person.name)
+            self.random_reason = ("%s does not have immunity" % random_person.name)
         else:
             random_person_status = "could not infect"
             if random_person_vacc is True:
-                random_person_reason = ("%s has immunity" % random_person.name)
+                self.random_reason = ("%s has immunity" % random_person.name)
             elif random_person_sick is True:
-                person2_reason = ("%s has already gotten sick" % random_person.name)
+                self.random_reason = ("%s has already gotten sick" % random_person.name)
         with open('%s.txt' % self.file_name, 'a') as files:
-            files.write("%s %s %s because %s\n" % (infected_person, person_status, random_person.name, random_person_reason))
-
+            files.write("%s %s %s because %s \n" % (infected_person.name, random_person_status, random_person.name, self.random_reason))
+            pdb.set_trace()
         pass
 
     def log_infection_survival(self, person, did_die_from_infection):

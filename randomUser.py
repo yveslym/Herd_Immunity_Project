@@ -5,7 +5,7 @@ import string
 import datetime
 
 class  User(object):
-    def __init__(fn,ln):
+    def __init__(self,fn,ln):
         self.first_name = fn
         self.last_name = ln
 
