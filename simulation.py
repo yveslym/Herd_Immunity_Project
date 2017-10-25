@@ -192,20 +192,32 @@ class Simulation(object):
         #pdb.set_trace()
         should_continue = self._simulation_should_continue()
         while should_continue == True:
+            print("\n\n ")
             print('time step count #'+str(self.time_step_counter))
         # TODO: for every iteration of this loop, call self.time_step() to compute another
         # round of this simulation.  At the end of each iteration of this loop, remember
         # to rebind should_continue to another call of self._simulation_should_continue()!
             self.time_step()
+
             should_continue = self._simulation_should_continue()
+
+
+            print("infected peoeple: %s" % self.infected_people)
+            print("dead people: %s" % self.dead_people)
+            print("vaccinated people: %s" % self.vacc_people)
+            print("regular people: %s" % self.regular_people)
             self.time_step_counter +=1
             self.infected_people = 0
             self.dead_people =0
             self.vacc_people = 0
             self.regular_people = 0
+            print("\n\n ")
+        print("total infected peoeple: %s" % self.total_infected)
+        print("total dead people: %s" % self.total_dead_population)
+        print("total vaccinated people: %s" % self.total_vaccinated)
 
 
-            pass
+        pass
         print('The simulation has ended after {} turns.'.format(self.time_step_counter))
 
     def time_step(self):
@@ -220,10 +232,7 @@ class Simulation(object):
             #           - Else:
             #               - Call simulation.interaction(person, random_person)
             #               - Increment interaction counter by 1.
-            infected_people = 0
-            vacc_people = 0
-            dead_people = 0
-            regular_people = 0
+
             for person in self.population:
                 if person.infected == True and person.is_alive == True:
                     count = 0
@@ -286,8 +295,10 @@ class Simulation(object):
                 if did_die_from_infection == False:
                     self.total_dead_population +=1
                     self.dead_people += 1
+
                 else:
                     self.vacc_people += 1
+                    self.total_vaccinated +=1
                 self.logger.log_infection_survival(person, did_die_from_infection)
 
 
