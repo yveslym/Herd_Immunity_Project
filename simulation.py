@@ -75,6 +75,11 @@ class Simulation(object):
                  mortality_rate, basic_repro_num, initial_infected=1):
         self.population_size = population_size
         self.population = []
+        self.infected_people = 0
+        self.dead_people =0
+        self.vacc_people = 0
+        self.regular_people = 0
+        self.time_step_counter = 1
         self.total_infected = 0
         self.current_infected = 0
         self.next_person_id = 0
@@ -137,8 +142,8 @@ class Simulation(object):
                     person = Person(False,False)
                     self.population.append(person)
             count += 1
-        #pdb.set_trace()
-        return population
+
+        return self.population
 
     def _simulation_should_continue(self):
         # TODO: Complete this method!  This method should return True if the simulation
@@ -179,25 +184,29 @@ class Simulation(object):
         # have passed using the time_step_counter variable.  Make sure you remember to
         # the logger's log_time_step() method at the end of each time step, pass in the
         # time_step_counter variable!
-        Logger.write_metadata(self.population_size, self.vacc_percentage, self.virus.name, self.virus.mortality_rate, self.virus.contagious_rate)
-        time_step_counter = 0
+        self.logger.write_metadata(self.population_size, self.vacc_percentage, self.virus.name, self.virus.mortality_rate, self.virus.contagious_rate)
+
         self._create_population()
         # TODO: Remember to set this variable to an intial call of
         # self._simulation_should_continue()!
         #pdb.set_trace()
         should_continue = self._simulation_should_continue()
         while should_continue == True:
-            print('time step count #'+str(time_step_counter))
+            print('time step count #'+str(self.time_step_counter))
         # TODO: for every iteration of this loop, call self.time_step() to compute another
         # round of this simulation.  At the end of each iteration of this loop, remember
         # to rebind should_continue to another call of self._simulation_should_continue()!
             self.time_step()
             should_continue = self._simulation_should_continue()
-            time_step_counter +=1
+            self.time_step_counter +=1
+            self.infected_people = 0
+            self.dead_people =0
+            self.vacc_people = 0
+            self.regular_people = 0
 
 
             pass
-        print('The simulation has ended after {time_step_counter} turns.'.format(time_step_counter))
+        print('The simulation has ended after {} turns.'.format(self.time_step_counter))
 
     def time_step(self):
         # TODO: Finish this method!  This method should contain all the basic logic
@@ -211,22 +220,27 @@ class Simulation(object):
             #           - Else:
             #               - Call simulation.interaction(person, random_person)
             #               - Increment interaction counter by 1.
-
+            infected_people = 0
+            vacc_people = 0
+            dead_people = 0
+            regular_people = 0
             for person in self.population:
                 if person.infected == True and person.is_alive == True:
                     count = 0
-
                     while count < 100:
                         random_person = self.population[random.randint(0,len(self.population)-1)]
-                        if random_person.is_alive == True and random_person.interacted == False:
+                        if random_person.is_alive == True: #and random_person.interacted == False:
                             self.interaction(person,random_person)
                             count += 1
+                elif person.infected == False and person.is_alive == True:
+                    self.regular_people += 1
 
+            self.logger.log_time_step(self.time_step_counter, self.infected_people, self.vacc_people, self.dead_people, self.regular_people)
             self.die_or_survived()
             self._infect_newly_infected()
-            print
+
             # reset the population interaction
-            for person in population:
+            for person in self.population:
                 person.interacted = False
             pass
 
@@ -256,6 +270,7 @@ class Simulation(object):
             did_infect = False
             if chance < self.virus.contagious_rate:
                 did_infect = True
+                self.infected_people += 1
                 self.newly_infected.append(random_person._id)
                 self.total_infected += 1
             self.logger.log_interaction(person,random_person,did_infect, random_person.is_vaccinated,random_person.infected)
@@ -267,8 +282,16 @@ class Simulation(object):
 
         for person in self.population:
             if person.infected == True:
-                if person.did_survive_infection() == False:
+                did_die_from_infection = person.did_survive_infection()
+                if did_die_from_infection == False:
                     self.total_dead_population +=1
+                    self.dead_people += 1
+                else:
+                    self.vacc_people += 1
+                self.logger.log_infection_survival(person, did_die_from_infection)
+
+
+
 
 
     def _infect_newly_infected(self):
@@ -283,7 +306,7 @@ class Simulation(object):
         # to reset self.newly_infected back to an empty list!
         index = 0
         for person_id in self.newly_infected:
-            for person in population:
+            for person in self.population:
                 if person._id == person_id:
                     person.infected = True
                     person.virus = self.virus

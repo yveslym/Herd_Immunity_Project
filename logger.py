@@ -88,7 +88,8 @@ class Logger(object):
         # NOTE: Make sure to end every line with a '/n' character to ensure that each
         # event logged ends up on a separate line!
 
-        pdb.set_trace()
+        # pdb.set_trace()
+
         random_person_status = ''
         if did_infect is True:
             random_person_status = "infected"
@@ -101,7 +102,7 @@ class Logger(object):
                 self.random_reason = ("%s has already gotten sick" % random_person.name)
         with open('%s.txt' % self.file_name, 'a') as files:
             files.write("%s %s %s because %s \n" % (infected_person.name, random_person_status, random_person.name, self.random_reason))
-            pdb.set_trace()
+            # pdb.set_trace()
         pass
 
     def log_infection_survival(self, person, did_die_from_infection):
@@ -113,9 +114,9 @@ class Logger(object):
         # NOTE: Make sure to end every line with a '/n' character to ensure that each
         # event logged ends up on a separate line!
         if did_die_from_infection is True:
-            did_die_from_infection = (" %s died from infection, so sad :(" % person.name)
+            did_die_from_infection = ("************** %s died from infection, so sad :(" % person.name)
         else:
-            did_die_from_infection = (" %s survived infection, Yes :)" % person.name)
+            did_die_from_infection = ("************** %s survived infection, Yes :)" % person.name)
         with open('%s.txt' % self.file_name, 'a') as files:
             files.write("%s %s\n" % (person.name, did_die_from_infection))
         pass
@@ -131,6 +132,6 @@ class Logger(object):
         # event logged ends up on a separate line!
         with open('%s.txt' % self.file_name, 'a') as f:
             f.write("time step #%s is done\n"
-                    "%s people got infected, %s people got vaccinated,"
-                    " %s people died and %s people are still regular\n" % (time_step_number, infected_people, vaccinated_people, dead_people, regular_people))
+                    "****************************%s people got infected, %s people got vaccinated,"
+                    "**************************** %s people died and %s people are still regular\n" % (time_step_number, infected_people, vaccinated_people, dead_people, regular_people))
         pass

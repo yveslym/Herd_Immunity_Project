@@ -59,7 +59,7 @@ class Person(object):
         #pdb.set_trace()
 
 
-    def did_survive_infection():
+    def did_survive_infection(self):
         # TODO:  Finish this method. Follow the instructions in the class documentation
         # for resolve_infection.  If person dies, set is_alive to False and return False.
         # If person lives, set is_vaccinated = True, infected = None, return True.
@@ -74,9 +74,6 @@ class Person(object):
                 self.is_alive = False
                 self.infected = False
                 return False
-
-
-
         pass
 
     #def resolve_infection():
